@@ -9,7 +9,6 @@ from . import models, schemas, auth
 logger = logging.getLogger(__name__)
 
 
-# User CRUD operations
 def get_user(db: Session, user_id: int) -> Optional[models.User]:
     return db.query(models.User).filter(models.User.id == user_id).first()
 
@@ -47,7 +46,6 @@ def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate) -> O
     if db_user:
         update_data = user_update.model_dump(exclude_unset=True)
         
-        # Если обновляется пароль, нужно его захешировать
         if "password" in update_data:
             update_data["hashed_password"] = auth.get_password_hash(update_data.pop("password"))
         
@@ -70,7 +68,6 @@ def delete_user(db: Session, user_id: int) -> bool:
     return False
 
 
-# Role CRUD operations
 def get_role(db: Session, role_id: int) -> Optional[models.Role]:
     return db.query(models.Role).filter(models.Role.id == role_id).first()
 
@@ -117,7 +114,6 @@ def delete_role(db: Session, role_id: int) -> bool:
     return False
 
 
-# ProductType CRUD operations
 def get_product_type(db: Session, type_id: int) -> Optional[models.ProductType]:
     return db.query(models.ProductType).filter(models.ProductType.id == type_id).first()
 
@@ -157,7 +153,6 @@ def delete_product_type(db: Session, type_id: int) -> bool:
     return False
 
 
-# ProductionBatch CRUD operations
 def get_batch(db: Session, batch_id: int) -> Optional[models.ProductionBatch]:
     return db.query(models.ProductionBatch).filter(models.ProductionBatch.id == batch_id).first()
 
@@ -237,7 +232,6 @@ def get_inspection_results(
     
     return query.offset(skip).limit(limit).all()
 
-# InspectionResult CRUD operations
 def get_inspection_result(db: Session, inspection_id: int) -> Optional[models.InspectionResult]:
     return db.query(models.InspectionResult).filter(models.InspectionResult.id == inspection_id).first()
 
@@ -265,7 +259,6 @@ def delete_inspection_result(db: Session, inspection_id: int) -> bool:
     return False
 
 
-# DefectType CRUD operations
 def get_defect_type(db: Session, defect_type_id: int) -> Optional[models.DefectType]:
     return db.query(models.DefectType).filter(models.DefectType.id == defect_type_id).first()
 

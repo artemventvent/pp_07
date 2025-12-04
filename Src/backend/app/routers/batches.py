@@ -36,7 +36,6 @@ def create_batch(
     current_user: schemas.User = Depends(get_current_user)
 ):
     """Создать новую производственную партию"""
-    # Проверяем права (оператор и выше)
     if not (current_user.role and (current_user.role.permissions.get("write") or 
                                    current_user.role.permissions.get("admin"))):
         raise HTTPException(
@@ -44,7 +43,6 @@ def create_batch(
             detail="Not enough permissions"
         )
     
-    # Проверяем, существует ли партия с таким номером
     db_batch = crud.get_batch_by_number(db, batch_number=batch.batch_number)
     if db_batch:
         raise HTTPException(
@@ -52,7 +50,6 @@ def create_batch(
             detail="Batch number already exists"
         )
     
-    # Добавляем ID создателя
     batch.created_by = current_user.id
     
     return crud.create_batch(db=db, batch=batch)

@@ -36,7 +36,6 @@ def create_inspection(
     current_user: schemas.User = Depends(get_current_user)
 ):
     """Создать новый результат контроля"""
-    # Оператор и выше могут создавать результаты контроля
     if not (current_user.role and (current_user.role.permissions.get("write") or 
                                    current_user.role.permissions.get("admin"))):
         raise HTTPException(
@@ -44,7 +43,6 @@ def create_inspection(
             detail="Not enough permissions"
         )
     
-    # Добавляем inspector_id если не указан
     if not inspection.inspector_id:
         inspection.inspector_id = current_user.id
     
@@ -61,7 +59,6 @@ def read_inspection(
     current_user: schemas.User = Depends(get_current_user)
 ):
     """Получить результат контроля по ID"""
-    # Нужно реализовать функцию get_inspection_result в crud.py
     from ..crud import get_inspection_result
     db_inspection = get_inspection_result(db, inspection_id=inspection_id)
     if db_inspection is None:
@@ -87,7 +84,6 @@ def update_inspection(
             detail="Not enough permissions"
         )
     
-    # Нужно реализовать функцию update_inspection_result в crud.py
     from ..crud import update_inspection_result
     db_inspection = update_inspection_result(db, inspection_id=inspection_id, inspection_update=inspection_update)
     if db_inspection is None:
@@ -111,7 +107,6 @@ def delete_inspection(
             detail="Not enough permissions"
         )
     
-    # Нужно реализовать функцию delete_inspection_result в crud.py
     from ..crud import delete_inspection_result
     if not delete_inspection_result(db, inspection_id=inspection_id):
         raise HTTPException(

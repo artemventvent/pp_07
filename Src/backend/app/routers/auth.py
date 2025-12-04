@@ -39,7 +39,6 @@ async def login_for_access_token(
         expires_delta=access_token_expires
     )
     
-    # Обновляем время последнего входа
     user.last_login = datetime.utcnow()
     db.commit()
     

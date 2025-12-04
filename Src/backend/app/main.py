@@ -8,7 +8,6 @@ from . import models, schemas, crud, auth
 from .database import engine, get_db
 from .config import settings
 
-# Создаем таблицы в БД (в продакшене используйте Alembic миграции)
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -20,7 +19,6 @@ app = FastAPI(
     openapi_url="/api/openapi.json"
 )
 
-# Настройка CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost", "http://frontend", settings.FRONTEND_URL],
@@ -29,11 +27,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# OAuth2 схема для токенов
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
 
-# Зависимость для получения текущего пользователя
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
@@ -55,10 +51,8 @@ async def get_current_user(
     return user
 
 
-# Импортируем роутеры
 from .routers import users, roles, product_types, batches, inspections, defects, auth as auth_router
 
-# Подключаем роутеры
 app.include_router(auth_router.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/api/users", tags=["Users"], dependencies=[Depends(get_current_user)])
 app.include_router(roles.router, prefix="/api/roles", tags=["Roles"], dependencies=[Depends(get_current_user)])
@@ -82,7 +76,6 @@ async def root():
 async def health_check(db: Session = Depends(get_db)):
     """Проверка здоровья приложения и подключения к БД"""
     try:
-        # Простой запрос к БД для проверки подключения
         db.execute("SELECT 1")
         return {
             "status": "healthy",

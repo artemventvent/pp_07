@@ -4,7 +4,6 @@ from datetime import datetime, date
 from decimal import Decimal
 
 
-# Базовые схемы
 class BaseSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

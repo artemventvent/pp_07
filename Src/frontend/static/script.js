@@ -1,9 +1,7 @@
-// Конфигурация
 const API_BASE_URL = '/api';
 let currentUser = null;
 let token = localStorage.getItem('token');
 
-// Элементы DOM
 const authSection = document.getElementById('authSection');
 const loginForm = document.getElementById('loginForm');
 const userInfo = document.getElementById('userInfo');
@@ -11,12 +9,10 @@ const currentUserSpan = document.getElementById('currentUser');
 const navbar = document.getElementById('navbar');
 const apiStatus = document.getElementById('apiStatus');
 
-// Глобальные переменные для хранения данных
 let productTypes = [];
 let batches = [];
 let inspections = [];
 
-// Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
     checkAuth();
     checkApiStatus();
@@ -25,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
     showSection('dashboard');
 });
 
-// Проверка статуса API
 async function checkApiStatus() {
     try {
         const response = await fetch(`${API_BASE_URL}/health`);
@@ -39,10 +34,8 @@ async function checkApiStatus() {
     }
 }
 
-// Проверка авторизации
 function checkAuth() {
     if (token) {
-        // Декодируем JWT токен (без проверки подписи, только payload)
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
             currentUser = {
@@ -62,7 +55,6 @@ function checkAuth() {
     }
 }
 
-// Обновление UI для авторизованного пользователя
 function updateUIForLoggedInUser() {
     loginForm.style.display = 'none';
     userInfo.style.display = 'flex';
@@ -70,21 +62,18 @@ function updateUIForLoggedInUser() {
     
     currentUserSpan.textContent = currentUser.username;
     
-    // Показываем административные разделы только для админов
     if (currentUser.role === 'admin') {
         document.getElementById('adminSection').style.display = 'block';
         document.getElementById('rolesSection').style.display = 'block';
     }
 }
 
-// Обновление UI для неавторизованного пользователя
 function updateUIForLoggedOutUser() {
     loginForm.style.display = 'block';
     userInfo.style.display = 'none';
     navbar.style.display = 'none';
 }
 
-// Вход в систему
 async function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
@@ -111,7 +100,6 @@ async function login() {
             
             checkAuth();
             
-            // Очистка полей формы
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
         } else {
@@ -123,45 +111,37 @@ async function login() {
     }
 }
 
-// Выход из системы
 function logout() {
     localStorage.removeItem('token');
     token = null;
     currentUser = null;
     checkAuth();
     
-    // Скрываем все секции, показываем только дашборд
     document.querySelectorAll('.content-section').forEach(section => {
         section.style.display = 'none';
     });
     document.getElementById('dashboard').style.display = 'block';
 }
 
-// Загрузка начальных данных
 async function loadInitialData() {
     if (!token) return;
     
     try {
-        // Загружаем типы продукции
         const productTypesResponse = await fetchWithAuth(`${API_BASE_URL}/product-types?limit=100`);
         if (productTypesResponse.ok) {
             productTypes = await productTypesResponse.json();
         }
         
-        // Загружаем партии
         await loadBatches();
         
-        // Загружаем результаты контроля
         await loadInspections();
         
-        // Обновляем дашборд
         updateDashboard();
     } catch (error) {
         console.error('Ошибка загрузки данных:', error);
     }
 }
 
-// Запрос с авторизацией
 async function fetchWithAuth(url, options = {}) {
     const headers = {
         'Authorization': `Bearer ${token}`,
@@ -174,25 +154,19 @@ async function fetchWithAuth(url, options = {}) {
     });
 }
 
-// Показать секцию
 function showSection(sectionId) {
-    // Скрыть все секции
     document.querySelectorAll('.content-section').forEach(section => {
         section.style.display = 'none';
     });
     
-    // Снять активный класс со всех кнопок
     document.querySelectorAll('.navbar button').forEach(button => {
         button.classList.remove('active');
     });
     
-    // Показать выбранную секцию
     document.getElementById(sectionId).style.display = 'block';
     
-    // Добавить активный класс кнопке
     event.target.classList.add('active');
     
-    // Загрузить данные для секции
     switch(sectionId) {
         case 'batches':
             loadBatches();
@@ -206,9 +180,6 @@ function showSection(sectionId) {
     }
 }
 
-// ================== РАБОТА С ПАРТИЯМИ ==================
-
-// Загрузка партий
 async function loadBatches() {
     if (!token) return;
     
@@ -223,7 +194,6 @@ async function loadBatches() {
     }
 }
 
-// Отображение таблицы партий
 function renderBatchesTable() {
     const tableBody = document.getElementById('batchesTableBody');
     tableBody.innerHTML = '';
@@ -231,7 +201,6 @@ function renderBatchesTable() {
     batches.forEach(batch => {
         const row = document.createElement('tr');
         
-        // Определяем цвет статуса
         let statusClass = '';
         switch(batch.status) {
             case 'в производстве': statusClass = 'status-in-production'; break;
@@ -239,7 +208,6 @@ function renderBatchesTable() {
             case 'отгружено': statusClass = 'status-shipped'; break;
         }
         
-        // Звезды для оценки качества
         let qualityStars = '';
         if (batch.quality_rating) {
             for (let i = 0; i < 5; i++) {
@@ -270,14 +238,12 @@ function renderBatchesTable() {
     });
 }
 
-// Поиск партий
 function searchBatches() {
     const searchTerm = document.getElementById('batchSearch').value.toLowerCase();
     const filteredBatches = batches.filter(batch => 
         batch.batch_number.toLowerCase().includes(searchTerm)
     );
     
-    // Временно отображаем отфильтрованные данные
     const tableBody = document.getElementById('batchesTableBody');
     tableBody.innerHTML = '';
     
@@ -298,7 +264,6 @@ function searchBatches() {
     });
 }
 
-// Фильтрация партий по статусу
 function filterBatches() {
     const status = document.getElementById('batchStatusFilter').value;
     const filteredBatches = status ? 
@@ -325,7 +290,6 @@ function filterBatches() {
     });
 }
 
-// Открытие модального окна для добавления партии
 function openBatchModal(batchId = null) {
     const modal = document.getElementById('batchModal');
     const modalTitle = document.getElementById('modalTitle');
@@ -348,7 +312,6 @@ function openBatchModal(batchId = null) {
         document.getElementById('batchId').value = '';
     }
     
-    // Заполняем выпадающий список типов продукции
     const productTypeSelect = document.getElementById('productTypeId');
     productTypeSelect.innerHTML = '<option value="">Выберите тип продукции</option>';
     productTypes.forEach(type => {
@@ -361,12 +324,10 @@ function openBatchModal(batchId = null) {
     document.getElementById('modalOverlay').style.display = 'flex';
 }
 
-// Закрытие модального окна
 function closeModal() {
     document.getElementById('modalOverlay').style.display = 'none';
 }
 
-// Сохранение партии
 async function saveBatch() {
     const batchId = document.getElementById('batchId').value;
     const batchData = {
@@ -388,7 +349,6 @@ async function saveBatch() {
         let response;
         
         if (batchId) {
-            // Обновление существующей партии
             response = await fetchWithAuth(`${API_BASE_URL}/batches/${batchId}`, {
                 method: 'PUT',
                 headers: {
@@ -397,7 +357,6 @@ async function saveBatch() {
                 body: JSON.stringify(batchData)
             });
         } else {
-            // Создание новой партии
             response = await fetchWithAuth(`${API_BASE_URL}/batches`, {
                 method: 'POST',
                 headers: {
@@ -421,12 +380,10 @@ async function saveBatch() {
     }
 }
 
-// Редактирование партии
 function editBatch(batchId) {
     openBatchModal(batchId);
 }
 
-// Просмотр партии
 function viewBatch(batchId) {
     const batch = batches.find(b => b.id === batchId);
     if (batch) {
@@ -443,7 +400,6 @@ function viewBatch(batchId) {
     }
 }
 
-// Удаление партии
 function deleteBatch(batchId) {
     const batch = batches.find(b => b.id === batchId);
     if (batch && confirm(`Вы уверены, что хотите удалить партию "${batch.batch_number}"?`)) {
@@ -465,9 +421,6 @@ function deleteBatch(batchId) {
     }
 }
 
-// ================== РАБОТА С РЕЗУЛЬТАТАМИ КОНТРОЛЯ ==================
-
-// Загрузка результатов контроля
 async function loadInspections() {
     if (!token) return;
     
@@ -482,7 +435,6 @@ async function loadInspections() {
     }
 }
 
-// Отображение таблицы результатов контроля
 function renderInspectionsTable() {
     const tableBody = document.getElementById('inspectionsTableBody');
     tableBody.innerHTML = '';
@@ -490,7 +442,6 @@ function renderInspectionsTable() {
     inspections.forEach(inspection => {
         const row = document.createElement('tr');
         
-        // Определяем цвет результата
         let verdictClass = '';
         switch(inspection.overall_verdict) {
             case 'соответствует': verdictClass = 'verdict-pass'; break;
@@ -498,7 +449,6 @@ function renderInspectionsTable() {
             case 'не соответствует': verdictClass = 'verdict-fail'; break;
         }
         
-        // Определяем цвет статуса
         let statusClass = '';
         switch(inspection.status) {
             case 'обработка': statusClass = 'status-processing'; break;
@@ -530,31 +480,23 @@ function renderInspectionsTable() {
     });
 }
 
-// ================== ДАШБОРД ==================
-
-// Обновление дашборда
 function updateDashboard() {
-    // Общее количество партий
     document.getElementById('totalBatches').textContent = batches.length;
     
-    // Количество проверок сегодня
     const today = new Date().toISOString().split('T')[0];
     const inspectionsToday = inspections.filter(inspection => 
         inspection.inspection_time.startsWith(today)
     ).length;
     document.getElementById('inspectionsToday').textContent = inspectionsToday;
     
-    // Количество обнаруженных дефектов
     const totalDefects = inspections.reduce((sum, inspection) => sum + inspection.defect_count, 0);
     document.getElementById('defectsFound').textContent = totalDefects;
     
-    // Процент брака
     const defectPercentage = inspections.length > 0 ? 
         (inspections.filter(i => i.is_defect_detected).length / inspections.length * 100).toFixed(1) : 
         0;
     document.getElementById('defectPercentage').textContent = `${defectPercentage}%`;
     
-    // Последние проверки
     const recentInspections = inspections
         .sort((a, b) => new Date(b.inspection_time) - new Date(a.inspection_time))
         .slice(0, 5);
@@ -575,8 +517,6 @@ function updateDashboard() {
         recentInspectionsDiv.appendChild(div);
     });
 }
-
-// ================== ДОБАВИТЬ ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ==================
 
 const style = document.createElement('style');
 style.textContent = `
