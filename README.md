@@ -207,8 +207,8 @@ class Role(Base):               # Роль
 
 1. **Клонируйте репозиторий:**
 ```bash
-git clone https://github.com/yourusername/metal-quality-control.git
-cd metal-quality-control
+git clone https://github.com/artemventvent/pp_07.git
+cd pp_07
 ```
 
 2. **Создайте файл окружения:**
