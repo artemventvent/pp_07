@@ -115,7 +115,7 @@ services:
 ## 📁 Структура проекта
 
 ```
-pp_07/
+pp_07/Src/
 ├── 📁 backend/                    # FastAPI приложение
 │   ├── 📁 app/
 │   │   ├── 📁 routers/           # Маршруты API
