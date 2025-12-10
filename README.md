@@ -195,7 +195,7 @@ class User(Base):               # Пользователь
 class Role(Base):               # Роль
 ```
 
-## 🚀 Быстрый старт
+## 🚀 Запуск
 
 ### **Требования:**
 - [Docker](https://docs.docker.com/get-docker/) 20.10+
