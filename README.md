@@ -147,11 +147,8 @@ metal_quality_control/
 │
 ├── docker-compose.yml          # Docker Compose конфигурация
 ├── .env.example               # Шаблон переменных окружения
-├── README.md                  # Эта документация
-└── 📁 docs/                    # Дополнительная документация
-    ├── api.md                 # Детали API
-    ├── database.md            # Схема БД
-    └── deployment.md          # Инструкции по деплою
+└── README.md                  # Эта документация
+
 ```
 
 ### **Детальное описание ключевых файлов:**
