@@ -115,7 +115,7 @@ services:
 ## 📁 Структура проекта
 
 ```
-metal_quality_control/
+pp_07/
 ├── 📁 backend/                    # FastAPI приложение
 │   ├── 📁 app/
 │   │   ├── 📁 routers/           # Маршруты API
